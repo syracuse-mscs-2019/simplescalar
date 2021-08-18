@@ -2,3 +2,5 @@
 
 
 # simplescalar
+
+To edit in GitHub directly, press "." while at this page.
