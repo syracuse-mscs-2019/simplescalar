@@ -1,1 +1,1 @@
-./config/sparc/xm-sol2.h
+./config/i386/xm-linux.h

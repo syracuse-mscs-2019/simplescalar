@@ -70,6 +70,10 @@ get_run_time ()
   return (tms.tms_utime + tms.tms_stime) * (1000000 / HZ);
 #else /* ! HAVE_TIMES */
   /* Fall back on clock and hope it's correctly implemented. */
+#define CLOCKS_PER_SEC_SUPPOSED ((clock)1000000)
+#if #CLOCKS_PER_SEC == #CLOCKS_PER_SEC_SUPPOSED
+#define CLOCKS_PER_SEC 1000000
+#endif
 #if CLOCKS_PER_SEC <= 1000000
   return clock () * (1000000 / CLOCKS_PER_SEC);
 #else

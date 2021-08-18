@@ -1,1 +1,1 @@
-./config/ss/ssbig.h
+./config/ss/sslittle.h

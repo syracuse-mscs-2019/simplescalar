@@ -66,7 +66,7 @@ OLDAR_FLAGS = qc
 AR_FLAGS = rc
 SHELL = /bin/sh
 # on sysV, define this as cp.
-INSTALL = /afs/cs.wisc.edu/p/galileo/projects/ss2/release/gcc-2.6.3/install.sh -c
+INSTALL = /home/jovyan/gcc-2.6.3/install.sh -c
 # These permit overriding just for certain files.
 INSTALL_PROGRAM = $(INSTALL)
 INSTALL_DATA = $(INSTALL)
@@ -141,8 +141,8 @@ STMP_FIXPROTO = stmp-fixproto
 PREMADE_ATTRTAB_MD = Makefile  # Guaranteed not to cmp equal to md.
 PREMADE_ATTRTAB = 
 
-target=ssbig-na-sstrix
-xmake_file=sparc/x-sysv4
+target=sslittle-na-sstrix
+xmake_file=i386/x-linux
 tmake_file=ss/t-ss-gas
 version=2.6.3
 mainversion=`sed -e 's/.*\"\([0-9]*\.[0-9]*\).*/\1/' < $(srcdir)/version.c`
@@ -151,7 +151,7 @@ mainversion=`sed -e 's/.*\"\([0-9]*\.[0-9]*\).*/\1/' < $(srcdir)/version.c`
 srcdir = .
 # Common prefix for installation directories.
 # NOTE: This directory must exist when you start installation.
-prefix = /p/galileo/projects/ss2/release
+prefix = /home/jovyan
 # Directory in which to put localized header files. On the systems with
 # gcc as the native cc, `local_prefix' may not be `prefix' which is
 # `/usr'.
@@ -358,8 +358,19 @@ LIBGCC1 = libgcc1.null
 CROSS_LIBGCC1 = libgcc1.null
 #T_CFLAGS = -Dinhibit_libc
 ####host overrides
-X_CFLAGS=-DSVR4
-ALLOCA=alloca.o
+X_CFLAGS = -DPOSIX
+
+# The following is needed when compiling stages 2 and 3 because gcc's
+# limits.h must be picked up before /usr/include/limits.h.  This is because
+# each does an #include_next of the other if the other hasn't been included.
+# /usr/include/limits.h loses if it gets found first because /usr/include is
+# at the end of the search order.  When a new version of gcc is released,
+# gcc's limits.h hasn't been installed yet and hence isn't found.
+
+BOOT_CFLAGS = -O $(CFLAGS) -Iinclude
+
+# Don't run fixproto
+STMP_FIXPROTO =
 ####cross overrides
 # Build libgcc1.a for a cross-compiler.
 # By default this expects the user to provide libgcc1.a,

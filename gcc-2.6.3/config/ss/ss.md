@@ -2281,7 +2281,7 @@ move\\t%0,%z4\\n\\
   dslots_jump_total += 3;
   dslots_jump_filled += 2;
 
-  return \"FIXME\\n
+  return \"FIXME\\n\\
 sll\\t%3,%2,26\\n\\
 \\tbgez\\t%3,1f\\n\\
 \\tsll\\t%M0,%L1,%2\\n\\
@@ -2482,7 +2482,7 @@ sll\\t%3,%2,26\\n\\
   dslots_jump_total += 3;
   dslots_jump_filled += 2;
 
-  return \"FIXME\\n
+  return \"FIXME\\n\\
 sll\\t%3,%2,26\\n\\
 \\tbgez\\t%3,1f\\n\\
 \\tsra\\t%L0,%M1,%2\\n\\
@@ -2681,7 +2681,7 @@ sll\\t%3,%2,26\\n\\
   dslots_jump_total += 3;
   dslots_jump_filled += 2;
 
-  return \"FIXME\\n
+  return \"FIXME\\n\\
 sll\\t%3,%2,26\\n\\
 \\tbgez\\t%3,1f\\n\\
 \\tsrl\\t%L0,%M1,%2\\n\\

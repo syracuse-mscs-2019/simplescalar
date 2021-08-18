@@ -25,18 +25,18 @@ Cambridge, MA 02139, USA.  */
 
 #ifndef NEED_sys_errlist
 /* Note that errno.h (not sure what OS) or stdio.h (BSD 4.4, at least)
-   might declare sys_errlist in a way that the compiler might consider
+   might declare sys_errlist_2 in a way that the compiler might consider
    incompatible with our later declaration, perhaps by using const
    attributes.  So we hide the declaration in errno.h (if any) using a
    macro. */
-#define sys_errlist sys_errlist__
+#define sys_errlist_2 sys_errlist_2__
 #endif
 
 #include <stdio.h>
 #include <errno.h>
 
 #ifndef NEED_sys_errlist
-#undef sys_errlist
+#undef sys_errlist_2
 #endif
 
 /*  Routines imported from standard C runtime libraries. */
@@ -464,13 +464,13 @@ static int num_error_names = 0;
 
 #ifdef NEED_sys_errlist
 
-static int sys_nerr;
-static const char **sys_errlist;
+static int sys_nerr_2;
+static const char **sys_errlist_2;
 
 #else
 
-extern int sys_nerr;
-extern char *sys_errlist[];
+extern int sys_nerr_2;
+extern char *sys_errlist_2[];
 
 #endif
 
@@ -488,7 +488,7 @@ SYNOPSIS
 DESCRIPTION
 
 	Using the error_table, which is initialized at compile time, generate
-	the error_names and the sys_errlist (if needed) tables, which are
+	the error_names and the sys_errlist_2 (if needed) tables, which are
 	indexed at runtime by a specific errno value.
 
 BUGS
@@ -541,19 +541,19 @@ init_error_tables ()
 
 #ifdef NEED_sys_errlist
 
-  /* Now attempt to allocate the sys_errlist table, zero it out, and then
+  /* Now attempt to allocate the sys_errlist_2 table, zero it out, and then
      initialize it from the statically initialized error_table. */
 
-  if (sys_errlist == NULL)
+  if (sys_errlist_2 == NULL)
     {
       nbytes = num_error_names * sizeof (char *);
-      if ((sys_errlist = (const char **) malloc (nbytes)) != NULL)
+      if ((sys_errlist_2 = (const char **) malloc (nbytes)) != NULL)
 	{
-	  memset (sys_errlist, 0, nbytes);
-	  sys_nerr = num_error_names;
+	  memset (sys_errlist_2, 0, nbytes);
+	  sys_nerr_2 = num_error_names;
 	  for (eip = error_table; eip -> name != NULL; eip++)
 	    {
-	      sys_errlist[eip -> value] = eip -> msg;
+	      sys_errlist_2[eip -> value] = eip -> msg;
 	    }
 	}
     }
@@ -576,12 +576,12 @@ DESCRIPTION
 
 	Returns the maximum errno value for which a corresponding symbolic
 	name or message is available.  Note that in the case where
-	we use the sys_errlist supplied by the system, it is possible for
+	we use the sys_errlist_2 supplied by the system, it is possible for
 	there to be more symbolic names than messages, or vice versa.
 	In fact, the manual page for perror(3C) explicitly warns that one
-	should check the size of the table (sys_nerr) before indexing it,
+	should check the size of the table (sys_nerr_2) before indexing it,
 	since new error codes may be added to the system before they are
-	added to the table.  Thus sys_nerr might be smaller than value
+	added to the table.  Thus sys_nerr_2 might be smaller than value
 	implied by the largest errno value defined in <errno.h>.
 
 	We return the maximum value that can be used to obtain a meaningful
@@ -598,7 +598,7 @@ errno_max ()
     {
       init_error_tables ();
     }
-  maxsize = MAX (sys_nerr, num_error_names);
+  maxsize = MAX (sys_nerr_2, num_error_names);
   return (maxsize - 1);
 }
 
@@ -618,15 +618,15 @@ DESCRIPTION
 
 	Maps an errno number to an error message string, the contents of
 	which are implementation defined.  On systems which have the external
-	variables sys_nerr and sys_errlist, these strings will be the same
+	variables sys_nerr_2 and sys_errlist_2, these strings will be the same
 	as the ones used by perror().
 
 	If the supplied error number is within the valid range of indices
-	for the sys_errlist, but no message is available for the particular
+	for the sys_errlist_2, but no message is available for the particular
 	error number, then returns the string "Error NUM", where NUM is the
 	error number.
 
-	If the supplied error number is not a valid index into sys_errlist,
+	If the supplied error number is not a valid index into sys_errlist_2,
 	returns NULL.
 
 	The returned string is only guaranteed to be valid only until the
@@ -650,21 +650,21 @@ strerror (errnoval)
 
 #endif
 
-  if ((errnoval < 0) || (errnoval >= sys_nerr))
+  if ((errnoval < 0) || (errnoval >= sys_nerr_2))
     {
       /* Out of range, just return NULL */
       msg = NULL;
     }
-  else if ((sys_errlist == NULL) || (sys_errlist[errnoval] == NULL))
+  else if ((sys_errlist_2 == NULL) || (sys_errlist_2[errnoval] == NULL))
     {
-      /* In range, but no sys_errlist or no entry at this index. */
+      /* In range, but no sys_errlist_2 or no entry at this index. */
       sprintf (buf, "Error %d", errnoval);
       msg = buf;
     }
   else
     {
       /* In range, and a valid message.  Just return the message. */
-      msg = (char *) sys_errlist[errnoval];
+      msg = (char *) sys_errlist_2[errnoval];
     }
   
   return (msg);
@@ -800,7 +800,7 @@ main ()
 
   errnmax = errno_max ();
   printf ("%d entries in names table.\n", num_error_names);
-  printf ("%d entries in messages table.\n", sys_nerr);
+  printf ("%d entries in messages table.\n", sys_nerr_2);
   printf ("%d is max useful index.\n", errnmax);
 
   /* Keep printing values until we get to the end of *both* tables, not
