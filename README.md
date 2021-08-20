@@ -1,6 +1,7 @@
 ### Branches
 - Main: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/syracuse-mscs-2019/simplescalar/master?urlpath=lab)
 - Ifiht: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/syracuse-mscs-2019/simplescalar/ifiht?urlpath=lab)
+- shut: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/syracuse-mscs-2019/simplescalar/ifiht?urlpath=lab)
 
 # simplescalar
 
