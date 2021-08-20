@@ -21,7 +21,7 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "bfd.h"
 #include "sysdep.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <demangle.h>
 
 #include "ld.h"
@@ -78,10 +78,10 @@ demangle (string, remove_underscore)
 }
 
 static void
-vfinfo(fp, fmt, arg)
-     FILE *fp;
-     char *fmt;
-     va_list arg;
+vfinfo(FILE *fp, char *fmt, va_list arg)
+//     FILE *fp;
+//     char *fmt;
+   //  va_list arg;
 {
   boolean fatal = false;
 
@@ -90,12 +90,12 @@ vfinfo(fp, fmt, arg)
     while (*fmt != '%' && *fmt != '\0') 
     {
       putc(*fmt, fp);
-      fmt++;
+    //  fmt++;
     }
 
     if (*fmt == '%') 
     {
-      fmt ++;
+    //  fmt ++;
       switch (*fmt++) 
       {
       default:
@@ -340,28 +340,28 @@ vfinfo(fp, fmt, arg)
 /* (You would think this should be called just "info", but then you would
    hosed by LynxOS, which defines that name in its libc.) */
 
-void info_msg(va_alist)
-     va_dcl
+void info_msg()
+//     va_dcl
 {
   char *fmt;
-  va_list arg;
-  va_start(arg);
-  fmt = va_arg(arg, char *);
-  vfinfo(stdout, fmt, arg);
-  va_end(arg);
+//  va_list arg;
+//  va_start(arg);
+//  fmt = va_arg(arg, char *);
+//  vfinfo(stdout, fmt, arg);
+//  va_end(arg);
 }
 
 /* ('e' for error.) Format info message and print on stderr. */
 
-void einfo(va_alist)
-     va_dcl
+void einfo()
+//     va_dcl
 {
   char *fmt;
-  va_list arg;
-  va_start(arg);
-  fmt = va_arg(arg, char *);
-  vfinfo(stderr, fmt, arg);
-  va_end(arg);
+//  va_list arg;
+//  va_start(arg);
+//  fmt = va_arg(arg, char *);
+//  vfinfo(stderr, fmt, arg);
+//  va_end(arg);
 }
 
 void 
@@ -385,30 +385,30 @@ buystring (x)
 
 /* ('m' for map) Format info message and print on map. */
 
-void minfo(va_alist)
-     va_dcl
+void minfo()
+//     va_dcl
 {
   char *fmt;
-  va_list arg;
-  va_start(arg);
-  fmt = va_arg(arg, char *);
-  vfinfo(config.map_file, fmt, arg);
-  va_end(arg);
+//  va_list arg;
+//  va_start(arg);
+//  fmt = va_arg(arg, char *);
+//  vfinfo(config.map_file, fmt, arg);
+//  va_end(arg);
 }
 
 
 static void
-finfo (va_alist)
-     va_dcl
+finfo ()
+//     va_dcl
 {
   char *fmt;
   FILE *file;
-  va_list arg;
-  va_start (arg);
-  file = va_arg (arg, FILE *);
-  fmt = va_arg (arg, char *);
-  vfinfo (file, fmt, arg);
-  va_end (arg);
+//  va_list arg;
+//  va_start (arg);
+//  file = va_arg (arg, FILE *);
+//  fmt = va_arg (arg, char *);
+//  vfinfo (file, fmt, arg);
+//  va_end (arg);
 }
 
 

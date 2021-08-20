@@ -375,7 +375,7 @@ input-file.o : input-file.c as.h \
    targ-env.h obj-format.h targ-cpu.h \
    struc-symbol.h write.h flonum.h bignum.h expr.h \
   frags.h hash.h read.h symbols.h tc.h obj.h input-file.h 
-input-scrub.o : input-scrub.c /usr/include/errno.h /usr/include/sys/errno.h \
+input-scrub.o : input-scrub.c /usr/include/errno.h /usr/include/x86_64-linux-gnu/sys/errno.h \
   as.h targ-env.h obj-format.h \
   targ-cpu.h  struc-symbol.h \
   write.h flonum.h bignum.h expr.h frags.h hash.h read.h symbols.h tc.h obj.h \

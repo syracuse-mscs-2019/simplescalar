@@ -9,6 +9,9 @@
 # sparc-sun-sunos4.1.3 sun4 sun3
 # produces sun3.x sun3.xbn sun3.xn sun3.xr sun3.xu em_sun3.c
 
+#genscripts.sh /djm/ld-devo/devo/ld /usr/local/lib sparc-sun-sunos4.1.3 sparc-sun-sunos4.1.3 sun4 sun3
+#genscripts.sh . /home/jovyan/lib i386-pc-linux sslittle-na-sstrix sslittle "" sslittle
+
 srcdir=$1
 libdir=$2
 host_alias=$3

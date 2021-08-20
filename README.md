@@ -33,3 +33,19 @@ https://github.com/sdenel/How-to-install-SimpleScalar-on-Ubuntu/blob/master/inst
 6. `sed -i -e "s/sys_errlist/sys_errlist_2/g" libiberty/strerror.c`
 7. `sed -i -e "s/NEED_sys_errPROTECTEDlist/NEED_sys_errlist/g" libiberty/strerror.c`
 8. `sed -i -e "s/va_list ap = args;/va_list ap; va_copy(ap, args);/g" libiberty/vasprintf.c`
+9. `sed -i -e "s/\/usr\/include\/sys\/errno.h/\/usr\/include\/x86_64-linux-gnu\/sys\/errno.h\/g" gas/Makefile`
+10. `sed -i -e "s/yy_current_buffer/YY_CURRENT_BUFFER/g" ld/ldlex.l`
+11. `sed -i -e "s/varargs.h/stdarg.h/g" ld/ldmisc.c`
+12. `sed -i -e "s/(va_alist)/()/g" ld/ldmisc.c`
+13. `sed -i -e "s/     va_dcl/\/\/     va_dcl/g" ld/ldmisc.c`
+14. `sed -i -e "s/     FILE \*fp;/\/\/     FILE \*fp;/g" ld/ldmisc.c`
+15. `sed -i -e "s/     char \*fmt;/\/\/     char \*fmt;/g" ld/ldmisc.c`
+16. `sed -i -e "s/vfinfo(fp, fmt, arg)/vfinfo(FILE \*fp, char \*fmt, va_list arg)/g" ld/ldmisc.c`
+17. `sed -i -e "s/  va_list arg;/\/\/  va_list arg;/g" ld/ldmisc.c`
+18. `sed -i -e "s/  va_start/\/\/  va_start/g" ld/ldmisc.c`
+19. `sed -i -e "s/  file/\/\/  file/g" ld/ldmisc.c`
+20. `sed -i -e "s/  fmt/\/\/  fmt/g" ld/ldmisc.c`
+21. `sed -i -e "s/  vfinfo/\/\/  vfinfo/g" ld/ldmisc.c`
+22. `sed -i -e "s/  va_end/\/\/  va_end/g" ld/ldmisc.c`
+23. mkdir ld/ldscripts
+24. make all
