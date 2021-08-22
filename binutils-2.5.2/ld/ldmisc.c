@@ -3,7 +3,7 @@
 
    Written by Steve Chamberlain of Cygnus Support.
 
-This file is part of GLD, the Gnu Linker.
+This//////////////// file is part of GLD, the Gnu Linker.
 
 GLD is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,12 +16,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GLD; see the file COPYING.  If not, write to
+along with GLD; see the//////////////// file COPYING.  If not, write to
 the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "bfd.h"
 #include "sysdep.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <demangle.h>
 
 #include "ld.h"
@@ -42,15 +42,15 @@ static const char *demangle PARAMS ((const char *string,
  %% literal %
  %F error is fatal
  %P print program name
- %S print script file and linenumber
+ %S print script//////////////// file and linenumber
  %E current bfd error or errno
- %I filename from a lang_input_statement_type
- %B filename from a bfd
+ %I//////////////// filename from a lang_input_statement_type
+ %B//////////////// filename from a bfd
  %T symbol name
  %X no object output, fail return
  %V hex bfd_vma
  %v hex bfd_vma, no leading zeros
- %C clever filename:linenumber with function
+ %C clever//////////////// filename:linenumber with function
  %D like %C, but no function name
  %R info about a relent
  %s arbitrary string, like printf
@@ -78,10 +78,10 @@ demangle (string, remove_underscore)
 }
 
 static void
-vfinfo(fp, fmt, arg)
-     FILE *fp;
-     char *fmt;
-     va_list arg;
+vfinfo(FILE *fp, char *fmt, va_list arg)
+    //////////////// FILE *fp;
+    //////////////// char *fmt;
+    //////////////// va_list arg;
 {
   boolean fatal = false;
 
@@ -90,16 +90,16 @@ vfinfo(fp, fmt, arg)
     while (*fmt != '%' && *fmt != '\0') 
     {
       putc(*fmt, fp);
-      fmt++;
+     //////////////// fmt++;
     }
 
     if (*fmt == '%') 
     {
-      fmt ++;
+     //////////////// fmt ++;
       switch (*fmt++) 
       {
       default:
-	fprintf(fp,"%%%c", fmt[-1]);
+	fprintf(fp,"%%%c",//////////////// fmt[-1]);
 	break;
 
       case '%':
@@ -148,7 +148,7 @@ vfinfo(fp, fmt, arg)
 	break;
 
        case 'B':
-	/* filename from a bfd */
+	/*//////////////// filename from a bfd */
        { 
 	 bfd *abfd = va_arg(arg, bfd *);
 	 if (abfd->my_archive) {
@@ -177,7 +177,7 @@ vfinfo(fp, fmt, arg)
 	break;
 
        case 'I':
-	/* filename from a lang_input_statement_type */
+	/*//////////////// filename from a lang_input_statement_type */
        {
 	 lang_input_statement_type *i =
 	  va_arg(arg,lang_input_statement_type *);
@@ -189,7 +189,7 @@ vfinfo(fp, fmt, arg)
 	break;
 
        case 'S':
-	/* print script file and linenumber */
+	/* print script//////////////// file and linenumber */
        {
 	 if (ldfile_input_filename) {
 	   fprintf(fp,"%s:%u", ldfile_input_filename, lineno );
@@ -211,7 +211,7 @@ vfinfo(fp, fmt, arg)
 	
        case 'C':
        case 'D':
-	/* Clever filename:linenumber with function name if possible,
+	/* Clever//////////////// filename:linenumber with function name if possible,
 	   or section name as a last resort.  The arguments are a BFD,
 	   a section, and an offset.  */
 	{
@@ -262,17 +262,17 @@ vfinfo(fp, fmt, arg)
 	      if (filename == (char *) NULL)
 		filename = abfd->filename;
 
-	      if (functionname != NULL && fmt[-1] == 'C')
+	      if (functionname != NULL &&//////////////// fmt[-1] == 'C')
 		{
 		  if (last_bfd == NULL
 		      || last_file == NULL
 		      || last_function == NULL
 		      || last_bfd != abfd
-		      || strcmp (last_file, filename) != 0
+		      || strcmp (last_file,//////////////// filename) != 0
 		      || strcmp (last_function, functionname) != 0)
 		    {
 		      /* We use abfd->filename in this initial line,
-                         in case filename is a .h file or something
+                         in case//////////////// filename is a .h//////////////// file or something
                          similarly unhelpful.  */
 		      finfo (fp, "%B: In function `%s':\n",
 			     abfd, demangle (functionname, 1));
@@ -286,12 +286,12 @@ vfinfo(fp, fmt, arg)
 		      last_function = buystring (functionname);
 		    }
 		  discard_last = false;
-		  fprintf (fp, "%s:%u", filename, linenumber);
+		  fprintf (fp, "%s:%u",//////////////// filename, linenumber);
 		}
 	      else if (linenumber != 0) 
-		finfo (fp, "%B:%s:%u", abfd, filename, linenumber);
+		finfo (fp, "%B:%s:%u", abfd,//////////////// filename, linenumber);
 	      else
-		finfo (fp, "%s(%s+0x%v)", filename, section->name, offset);
+		finfo (fp, "%s(%s+0x%v)",//////////////// filename, section->name, offset);
 	    }
 	  else
 	    finfo (fp, "%s(%s+0x%v)", abfd->filename, section->name, offset);
@@ -340,28 +340,28 @@ vfinfo(fp, fmt, arg)
 /* (You would think this should be called just "info", but then you would
    hosed by LynxOS, which defines that name in its libc.) */
 
-void info_msg(va_alist)
-     va_dcl
+void info_msg()
+    //////////////// va_dcl
 {
-  char *fmt;
-  va_list arg;
-  va_start(arg);
-  fmt = va_arg(arg, char *);
-  vfinfo(stdout, fmt, arg);
-  va_end(arg);
+ //////////////// char *fmt;
+ //////////////// va_list arg;
+ //////////////// va_start(arg);
+ //////////////// fmt = va_arg(arg, char *);
+ //////////////// vfinfo(stdout,//////////////// fmt, arg);
+ //////////////// va_end(arg);
 }
 
 /* ('e' for error.) Format info message and print on stderr. */
 
-void einfo(va_alist)
-     va_dcl
+void einfo()
+    //////////////// va_dcl
 {
-  char *fmt;
-  va_list arg;
-  va_start(arg);
-  fmt = va_arg(arg, char *);
-  vfinfo(stderr, fmt, arg);
-  va_end(arg);
+ //////////////// char *fmt;
+ //////////////// va_list arg;
+ //////////////// va_start(arg);
+ //////////////// fmt = va_arg(arg, char *);
+ //////////////// vfinfo(stderr,//////////////// fmt, arg);
+ //////////////// va_end(arg);
 }
 
 void 
@@ -369,7 +369,7 @@ info_assert(file, line)
      char *file;
      unsigned int line;
 {
-  einfo("%F%P: internal error %s %d\n", file,line);
+  einfo("%F%P: internal error %s %d\n",//////////////// file,line);
 }
 
 char *
@@ -385,30 +385,30 @@ buystring (x)
 
 /* ('m' for map) Format info message and print on map. */
 
-void minfo(va_alist)
-     va_dcl
+void minfo()
+    //////////////// va_dcl
 {
-  char *fmt;
-  va_list arg;
-  va_start(arg);
-  fmt = va_arg(arg, char *);
-  vfinfo(config.map_file, fmt, arg);
-  va_end(arg);
+ //////////////// char *fmt;
+ //////////////// va_list arg;
+ //////////////// va_start(arg);
+ //////////////// fmt = va_arg(arg, char *);
+ //////////////// vfinfo(config.map_file,//////////////// fmt, arg);
+ //////////////// va_end(arg);
 }
 
 
 static void
-finfo (va_alist)
-     va_dcl
+finfo ()
+    //////////////// va_dcl
 {
-  char *fmt;
+ //////////////// char *fmt;
   FILE *file;
-  va_list arg;
-  va_start (arg);
-  file = va_arg (arg, FILE *);
-  fmt = va_arg (arg, char *);
-  vfinfo (file, fmt, arg);
-  va_end (arg);
+ //////////////// va_list arg;
+ //////////////// va_start (arg);
+ //////////////// file = va_arg (arg, FILE *);
+ //////////////// fmt = va_arg (arg, char *);
+ //////////////// vfinfo (file,//////////////// fmt, arg);
+ //////////////// va_end (arg);
 }
 
 
