@@ -33,3 +33,7 @@ https://github.com/sdenel/How-to-install-SimpleScalar-on-Ubuntu/blob/master/inst
 5. `sed -i -e "s/sys_nerr/sys_nerr_2/g" libiberty/strerror.c`
 6. `sed -i -e "s/sys_errlist/sys_errlist_2/g" libiberty/strerror.c`
 7. `sed -i -e "s/NEED_sys_errPROTECTEDlist/NEED_sys_errlist/g" libiberty/strerror.c`
+
+#### Test
+1. `cp -r sslittle-na-sstrix/* glibc-1.09/`
+2. `./simplesim-3.0/sim-outorder tests/bin/test-math`
