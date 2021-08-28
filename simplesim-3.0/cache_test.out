@@ -8,11 +8,11 @@ of SimpleScalar, LLC (info@simplescalar.com).
 warning: section `.comment' ignored...
 sim: command line: ./sim-cache -config config1.cfg -redir:sim cache_test.out ./test-math 
 
-sim: simulation started @ Sat Aug 28 21:44:47 2021, options follow:
+sim: simulation started @ Sat Aug 28 22:15:37 2021, options follow:
 
 sim-cache: This simulator implements a functional cache simulator.  Cache
 statistics are generated for a user-selected cache and TLB configuration,
-which may include up to two levels of instruction and data cache (with any
+which may include up to three levels of instruction and data cache (with any
 levels unified), and one level of instruction and data TLBs.  No timing
 information is generated.
 
@@ -31,8 +31,10 @@ information is generated.
 -max:inst                   0 # maximum number of inst's to execute
 -cache:dl1       dl1:64:64:1:l # l1 data cache config, i.e., {<config>|none}
 -cache:dl2       dl2:128:64:1:l # l2 data cache config, i.e., {<config>|none}
--cache:il1       il1:64:64:1:l # l1 inst cache config, i.e., {<config>|dl1|dl2|none}
--cache:il2       il2:128:64:1:l; # l2 instruction cache config, i.e., {<config>|dl2|none}
+-cache:dl3               none # l3 data cache config, i.e., {<config>|none}
+-cache:il1       il1:64:64:1:l # l1 inst cache config, i.e., {<config>|dl1|dl2|dl3|none}
+-cache:il2       il2:128:64:1:l; # l2 instruction cache config, i.e., {<config>|dl2|dl3|none}
+-cache:il3               none # l3 instruction cache config, i.e., {<config>|dl3|none}
 -tlb:itlb                none # instruction TLB config, i.e., {<config>|none}
 -tlb:dtlb                none # data TLB config, i.e., {<config>|none}
 -flush                  false # flush caches on system calls
@@ -70,6 +72,11 @@ sim: ** starting functional simulation w/ caches **
 warning: partially supported sigprocmask() call...
 
 sim: ** simulation statistics **
+sim_cycle                     49789 # total simulation time in cycles
+sim_IPC                      1.0000 # instructions per cycle
+sim_CPI                      1.0000 # cycles per instruction
+sim_exec_BW            <error: variable is undefined> # total instructions (mis-spec + committed) per cycle
+sim_IPB                <error: variable is undefined> # instruction per branch
 sim_num_insn                  49790 # total number of instructions executed
 sim_num_refs                  13760 # total number of loads and stores executed
 sim_elapsed_time                  1 # total simulation time in seconds
@@ -84,14 +91,14 @@ il1.miss_rate                0.0730 # miss rate (i.e., misses/ref)
 il1.repl_rate                0.0717 # replacement rate (i.e., repls/ref)
 il1.wb_rate                  0.0000 # writeback rate (i.e., wrbks/ref)
 il1.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
-il2.accesses                  53426 # total number of accesses
-il2.hits                      50552 # total number of hits
+il2.accesses                   3636 # total number of accesses
+il2.hits                        762 # total number of hits
 il2.misses                     2874 # total number of misses
 il2.replacements               2747 # total number of replacements
 il2.writebacks                    0 # total number of writebacks
 il2.invalidations                 0 # total number of invalidations
-il2.miss_rate                0.0538 # miss rate (i.e., misses/ref)
-il2.repl_rate                0.0514 # replacement rate (i.e., repls/ref)
+il2.miss_rate                0.7904 # miss rate (i.e., misses/ref)
+il2.repl_rate                0.7555 # replacement rate (i.e., repls/ref)
 il2.wb_rate                  0.0000 # writeback rate (i.e., wrbks/ref)
 il2.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
 dl1.accesses                  14234 # total number of accesses
@@ -104,15 +111,15 @@ dl1.miss_rate                0.0558 # miss rate (i.e., misses/ref)
 dl1.repl_rate                0.0513 # replacement rate (i.e., repls/ref)
 dl1.wb_rate                  0.0226 # writeback rate (i.e., wrbks/ref)
 dl1.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
-dl2.accesses                   1590 # total number of accesses
-dl2.hits                       1026 # total number of hits
+dl2.accesses                   1116 # total number of accesses
+dl2.hits                        552 # total number of hits
 dl2.misses                      564 # total number of misses
 dl2.replacements                453 # total number of replacements
 dl2.writebacks                  222 # total number of writebacks
 dl2.invalidations                 0 # total number of invalidations
-dl2.miss_rate                0.3547 # miss rate (i.e., misses/ref)
-dl2.repl_rate                0.2849 # replacement rate (i.e., repls/ref)
-dl2.wb_rate                  0.1396 # writeback rate (i.e., wrbks/ref)
+dl2.miss_rate                0.5054 # miss rate (i.e., misses/ref)
+dl2.repl_rate                0.4059 # replacement rate (i.e., repls/ref)
+dl2.wb_rate                  0.1989 # writeback rate (i.e., wrbks/ref)
 dl2.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
 ld_text_base           0x0120000000 # program text (code) segment base
 ld_text_size                 188416 # program text (code) size in bytes
@@ -126,6 +133,6 @@ ld_target_big_endian              0 # target executable endian-ness, non-zero if
 mem.page_count                   29 # total number of pages allocated
 mem.page_mem                   232k # total size of memory pages allocated
 mem.ptab_misses                  75 # total first level page table misses
-mem.ptab_accesses            649944 # total page table accesses
+mem.ptab_accesses            550364 # total page table accesses
 mem.ptab_miss_rate           0.0001 # first level page table miss rate
 

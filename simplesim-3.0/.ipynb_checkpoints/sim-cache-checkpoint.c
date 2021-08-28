@@ -1,34 +1,4 @@
-Skip to content
-Why GitHub? 
-Team
-Enterprise
-Explore 
-Marketplace
-Pricing 
-Search
-Sign in
-Sign up
-KaiboLiu
-/
-sim-cache-l3
-10
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-sim-cache-l3/sim-cache.c
-@KaiboLiu
-KaiboLiu add l3 data cache and instruction cache
-…
-Latest commit bc44798 on Jun 7, 2017
- History
- 1 contributor
-985 lines (863 sloc)  32.2 KB
-  
+ 
 /* sim-cache.c - sample cache simulator implementation */
 
 /* SimpleScalar(TM) Tool Suite
@@ -140,6 +110,9 @@ static struct cache_t *itlb = NULL;
 
 /* data TLB */
 static struct cache_t *dtlb = NULL;
+
+/* cycle counter */
+static tick_t sim_cycle = 0;
 
 /* text-based stat profiles */
 #define MAX_PCSTAT_VARS 8
@@ -421,7 +394,7 @@ sim_check_options(struct opt_odb_t *odb,	/* options database */
 {
   char name[128], c;
   int nsets, bsize, assoc;
-
+  
   /* use a level 1 D-cache? */
   if (!mystricmp(cache_dl1_opt, "none"))
     {
@@ -491,7 +464,7 @@ sim_check_options(struct opt_odb_t *odb,	/* options database */
 
       /* the level 2 I-cache cannot be defined */
       if (strcmp(cache_il2_opt, "none"))
-	fatal("the l1 inst cache must defined if the l2 cache is defined");
+	fatal("the l1 inst cache must defined if the l2 cache is defined+");
       cache_il2 = NULL;
       
       /* the level 3 I-cache cannot be defined */
@@ -503,49 +476,21 @@ sim_check_options(struct opt_odb_t *odb,	/* options database */
     {
       if (!cache_dl1)
 	fatal("I-cache l1 cannot access D-cache l1 as it's undefined");
-      cache_il1 = cache_dl1;
-
-      /* the level 2 I-cache cannot be defined */
-      if (strcmp(cache_il2_opt, "none"))
-	fatal("the l1 inst cache must defined if the l2 cache is defined");
-      cache_il2 = NULL;
-      
-      /* the level 3 I-cache cannot be defined */
-      if (strcmp(cache_il3_opt, "none"))
-	fatal("the l1 inst cache must defined if the l3 cache is defined");
-      cache_il3 = NULL;
+      cache_il1 = cache_dl1;    
     }
-  else if (!mystricmp(cache_il1_opt, "dl2"))
+
+  else if (!mystricmp(cache_il2_opt, "dl2"))
     {
       if (!cache_dl2)
 	fatal("I-cache l1 cannot access D-cache l2 as it's undefined");
-      cache_il1 = cache_dl2;
-
-      /* the level 2 I-cache cannot be defined */
-      if (strcmp(cache_il2_opt, "none"))
-	fatal("the l1 inst cache must defined if the l2 cache is defined");
-      cache_il2 = NULL;
-      
-      /* the level 3 I-cache cannot be defined */
-      if (strcmp(cache_il3_opt, "none"))
-	fatal("the l1 inst cache must defined if the l3 cache is defined");
-      cache_il3 = NULL;
+      cache_il2 = cache_dl2;
     }
-  else if (!mystricmp(cache_il1_opt, "dl3"))
+  else if (!mystricmp(cache_il3_opt, "dl3"))
     {
       if (!cache_dl3)
 	fatal("I-cache l1 cannot access D-cache l3 as it's undefined");
-      cache_il1 = cache_dl2;
+      cache_il3 = cache_dl3;
 
-      /* the level 2 I-cache cannot be defined */
-      if (strcmp(cache_il2_opt, "none"))
-	fatal("the l1 inst cache must defined if the l2 cache is defined");
-      cache_il2 = NULL;
-      
-      /* the level 3 I-cache cannot be defined */
-      if (strcmp(cache_il3_opt, "none"))
-	fatal("the l1 inst cache must defined if the l3 cache is defined");
-      cache_il3 = NULL;
     }
   else /* il1 is defined */
     {
@@ -691,6 +636,23 @@ void
 sim_reg_stats(struct stat_sdb_t *sdb)	/* stats database */
 {
   int i;
+
+  /* register performance stats */
+  stat_reg_counter(sdb, "sim_cycle",
+		   "total simulation time in cycles",
+		   &sim_cycle, /* initial value */0, /* format */NULL);
+  stat_reg_formula(sdb, "sim_IPC",
+		   "instructions per cycle",
+		   "sim_num_insn / sim_cycle", /* format */NULL);
+  stat_reg_formula(sdb, "sim_CPI",
+		   "cycles per instruction",
+		   "sim_cycle / sim_num_insn", /* format */NULL);
+  stat_reg_formula(sdb, "sim_exec_BW",
+		   "total instructions (mis-spec + committed) per cycle",
+		   "sim_total_insn / sim_cycle", /* format */NULL);
+  stat_reg_formula(sdb, "sim_IPB",
+		   "instruction per branch",
+		   "sim_num_insn / sim_num_branches", /* format */NULL);
 
   /* register baseline stats */
   stat_reg_counter(sdb, "sim_num_insn",
@@ -1009,6 +971,9 @@ sim_main(void)
       regs.regs_PC = regs.regs_NPC;
       regs.regs_NPC += sizeof(md_inst_t);
 
+      /* go to next cycle */
+      sim_cycle++;
+      
       /* finish early? */
       if (max_insts && sim_num_insn >= max_insts)
 	return;
