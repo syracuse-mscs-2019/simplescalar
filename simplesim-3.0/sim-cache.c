@@ -89,14 +89,20 @@ static unsigned int max_insts;
 /* level 1 instruction cache, entry level instruction cache */
 static struct cache_t *cache_il1 = NULL;
 
-/* level 1 instruction cache */
+/* level 2 instruction cache */
 static struct cache_t *cache_il2 = NULL;
+
+/* level 3 instruction cache */
+static struct cache_t *cache_il3 = NULL;
 
 /* level 1 data cache, entry level data cache */
 static struct cache_t *cache_dl1 = NULL;
 
 /* level 2 data cache */
 static struct cache_t *cache_dl2 = NULL;
+
+/* level 3 data cache */
+static struct cache_t *cache_dl3 = NULL;
 
 /* instruction TLB */
 static struct cache_t *itlb = NULL;
@@ -134,7 +140,13 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
       return cache_access(cache_dl2, cmd, baddr, NULL, bsize,
 			  /* now */now, /* pudata */NULL, /* repl addr */NULL);
     }
-  else
+    else if (cache_dl3)
+    {
+      /* access next level of data cache hierarchy */
+      return cache_access(cache_dl3, cmd, baddr, NULL, bsize,
+			  /* now */now, /* pudata */NULL, /* repl addr */NULL);
+    }        
+    else
     {
       /* access main memory, which is always done in the main simulator loop */
       return /* access latency, ignored */1;
@@ -144,6 +156,19 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 /* l2 data cache block miss handler function */
 static unsigned int			/* latency of block access */
 dl2_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
+	      md_addr_t baddr,		/* block address to access */
+	      int bsize,		/* size of block to access */
+	      struct cache_blk_t *blk,	/* ptr to block in upper level */
+	      tick_t now)		/* time of access */
+{
+  /* this is a miss to the lowest level, so access main memory, which is
+     always done in the main simulator loop */
+  return /* access latency, ignored */1;
+}
+
+/* l3 data cache block miss handler function */
+static unsigned int			/* latency of block access */
+dl3_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 	      md_addr_t baddr,		/* block address to access */
 	      int bsize,		/* size of block to access */
 	      struct cache_blk_t *blk,	/* ptr to block in upper level */
@@ -168,6 +193,12 @@ il1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
       return cache_access(cache_il2, cmd, baddr, NULL, bsize,
 			  /* now */now, /* pudata */NULL, /* repl addr */NULL);
     }
+  else if (cache_il3)
+    {
+      /* access next level of inst cache hierarchy */
+      return cache_access(cache_il3, cmd, baddr, NULL, bsize,
+			  /* now */now, /* pudata */NULL, /* repl addr */NULL);
+    }    
   else
     {
       /* access main memory, which is always done in the main simulator loop */
@@ -178,6 +209,19 @@ il1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 /* l2 inst cache block miss handler function */
 static unsigned int			/* latency of block access */
 il2_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
+	      md_addr_t baddr,		/* block address to access */
+	      int bsize,		/* size of block to access */
+	      struct cache_blk_t *blk,	/* ptr to block in upper level */
+	      tick_t now)		/* time of access */
+{
+  /* this is a miss to the lowest level, so access main memory, which is
+     always done in the main simulator loop */
+  return /* access latency, ignored */1;
+}
+
+/* l3 inst cache block miss handler function */
+static unsigned int			/* latency of block access */
+il3_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 	      md_addr_t baddr,		/* block address to access */
 	      int bsize,		/* size of block to access */
 	      struct cache_blk_t *blk,	/* ptr to block in upper level */
@@ -229,8 +273,10 @@ dtlb_access_fn(enum mem_cmd cmd,	/* access cmd, Read or Write */
 /* cache/TLB options */
 static char *cache_dl1_opt /* = "none" */;
 static char *cache_dl2_opt /* = "none" */;
+static char *cache_dl3_opt /* = "none" */;
 static char *cache_il1_opt /* = "none" */;
 static char *cache_il2_opt /* = "none" */;
+static char *cache_il3_opt /* = "none" */;
 static char *itlb_opt /* = "none" */;
 static char *dtlb_opt /* = "none" */;
 static int flush_on_syscalls /* = FALSE */;
@@ -529,20 +575,23 @@ sim_reg_stats(struct stat_sdb_t *sdb)	/* stats database */
 		   "sim_num_insn / sim_elapsed_time", NULL);
 
   /* register cache stats */
-  if (cache_il1
-      && (cache_il1 != cache_dl1 && cache_il1 != cache_dl2))
+  if (cache_il1 && (cache_il1 != cache_dl1 && cache_il1 != cache_dl2 && cache_il1 != cache_dl3))
+  {
     cache_reg_stats(cache_il1, sdb);
-  if (cache_il2
-      && (cache_il2 != cache_dl1 && cache_il2 != cache_dl2))
+  }
+  if (cache_il2 && (cache_il2 != cache_dl1 && cache_il2 != cache_dl2 && cache_il2 != cache_dl3))
+  {
     cache_reg_stats(cache_il2, sdb);
-  if (cache_dl1)
-    cache_reg_stats(cache_dl1, sdb);
-  if (cache_dl2)
-    cache_reg_stats(cache_dl2, sdb);
-  if (itlb)
-    cache_reg_stats(itlb, sdb);
-  if (dtlb)
-    cache_reg_stats(dtlb, sdb);
+  }
+  if (cache_il3 && (cache_il3!= cache_dl1 && cache_il3 != cache_dl2 && cache_il3 != cache_dl3))
+  {
+    cache_reg_stats(cache_il3, sdb);
+  }  
+  if (cache_dl1) cache_reg_stats(cache_dl1, sdb);
+  if (cache_dl2) cache_reg_stats(cache_dl2, sdb);
+  if (cache_dl3) cache_reg_stats(cache_dl3, sdb);  
+  if (itlb) cache_reg_stats(itlb, sdb);
+  if (dtlb) cache_reg_stats(dtlb, sdb);
 
   for (i=0; i<pcstat_nelt; i++)
     {
@@ -705,10 +754,10 @@ dcache_access_fn(struct mem_t *mem,	/* memory space to access */
 		 void *p,		/* data input/output buffer */
 		 int nbytes)		/* number of bytes to access */
 {
-  if (dtlb)
-    cache_access(dtlb, cmd, addr, NULL, nbytes, 0, NULL, NULL);
-  if (cache_dl1)
-    cache_access(cache_dl1, cmd, addr, NULL, nbytes, 0, NULL, NULL);
+  if (dtlb) cache_access(dtlb, cmd, addr, NULL, nbytes, 0, NULL, NULL);
+  if (cache_dl1) cache_access(cache_dl1, cmd, addr, NULL, nbytes, 0, NULL, NULL);
+  if (cache_dl2) cache_access(cache_dl2, cmd, addr, NULL, nbytes, 0, NULL, NULL); 
+  if (cache_dl3) cache_access(cache_dl3, cmd, addr, NULL, nbytes, 0, NULL, NULL);     
   return mem_access(mem, cmd, addr, p, nbytes);
 }
 
@@ -751,14 +800,22 @@ sim_main(void)
 #endif /* TARGET_ALPHA */
 
       /* get the next instruction to execute */
-      if (itlb)
-	cache_access(itlb, Read, IACOMPRESS(regs.regs_PC),
-		     NULL, ISCOMPRESS(sizeof(md_inst_t)), 0, NULL, NULL);
-      if (cache_il1)
-	cache_access(cache_il1, Read, IACOMPRESS(regs.regs_PC),
-		     NULL, ISCOMPRESS(sizeof(md_inst_t)), 0, NULL, NULL);
-      MD_FETCH_INST(inst, mem, regs.regs_PC);
-
+      if (itlb) cache_access(itlb, Read, IACOMPRESS(regs.regs_PC), NULL, ISCOMPRESS(sizeof(md_inst_t)), 0, NULL, NULL);
+      if (cache_il1) 
+      {
+          cache_access(cache_il1, Read, IACOMPRESS(regs.regs_PC),NULL, ISCOMPRESS(sizeof(md_inst_t)), 0, NULL, NULL);
+          MD_FETCH_INST(inst, mem, regs.regs_PC);
+      }
+      if (cache_il2) 
+      {
+          cache_access(cache_il2, Read, IACOMPRESS(regs.regs_PC),NULL, ISCOMPRESS(sizeof(md_inst_t)), 0, NULL, NULL);
+          MD_FETCH_INST(inst, mem, regs.regs_PC);
+      } 
+      if (cache_il3) 
+      {
+          cache_access(cache_il3, Read, IACOMPRESS(regs.regs_PC),NULL, ISCOMPRESS(sizeof(md_inst_t)), 0, NULL, NULL);
+          MD_FETCH_INST(inst, mem, regs.regs_PC);
+      }           
       /* keep an instruction count */
       sim_num_insn++;
 
