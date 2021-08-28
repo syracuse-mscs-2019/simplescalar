@@ -1,0 +1,128 @@
+sim-cache: SimpleScalar/Alpha Tool Set version 3.0 of August, 2003.
+Copyright (c) 1994-2003 by Todd M. Austin, Ph.D. and SimpleScalar, LLC.
+All Rights Reserved. This version of SimpleScalar is licensed for academic
+non-commercial use.  No portion of this work may be used by any commercial
+entity, or for any commercial purpose, without the prior written permission
+of SimpleScalar, LLC (info@simplescalar.com).
+
+warning: section `.comment' ignored...
+sim: command line: ./sim-cache -config unifiedL3.cfg -redir:sim unifiedL3math.out ./test-math 
+
+sim: simulation started @ Sat Aug 28 23:23:05 2021, options follow:
+
+sim-cache: This simulator implements a functional cache simulator.  Cache
+statistics are generated for a user-selected cache and TLB configuration,
+which may include up to three levels of instruction and data cache (with any
+levels unified), and one level of instruction and data TLBs.  No timing
+information is generated.
+
+# -config                     # load configuration from a file
+# -dumpconfig                 # dump configuration to a file
+# -h                    false # print help message    
+# -v                    false # verbose operation     
+# -d                    false # enable debug message  
+# -i                    false # start in Dlite debugger
+-seed                       1 # random number generator seed (0 for timer seed)
+# -q                    false # initialize and terminate immediately
+# -chkpt               <null> # restore EIO trace execution from <fname>
+# -redir:sim     unifiedL3math.out # redirect simulator output to file (non-interactive only)
+# -redir:prog          <null> # redirect simulated program output to file
+-nice                       0 # simulator scheduling priority
+-max:inst                   0 # maximum number of inst's to execute
+-cache:dl1       ul1:128:64:2:l # l1 data cache config, i.e., {<config>|none}
+-cache:dl2       ul2:256:64:2:l # l2 data cache config, i.e., {<config>|none}
+-cache:dl3       ul3:512:64:2:l # l3 data cache config, i.e., {<config>|none}
+-cache:il1                dl1 # l1 inst cache config, i.e., {<config>|dl1|dl2|dl3|none}
+-cache:il2                dl2 # l2 instruction cache config, i.e., {<config>|dl2|dl3|none}
+-cache:il3                dl3 # l3 instruction cache config, i.e., {<config>|dl3|none}
+-tlb:itlb                none # instruction TLB config, i.e., {<config>|none}
+-tlb:dtlb                none # data TLB config, i.e., {<config>|none}
+-flush                  false # flush caches on system calls
+-cache:icompress        false # convert 64-bit inst addresses to 32-bit inst equivalents
+# -pcstat              <null> # profile stat(s) against text addr's (mult uses ok)
+
+  The cache config parameter <config> has the following format:
+
+    <name>:<nsets>:<bsize>:<assoc>:<repl>
+
+    <name>   - name of the cache being defined
+    <nsets>  - number of sets in the cache
+    <bsize>  - block size of the cache
+    <assoc>  - associativity of the cache
+    <repl>   - block replacement strategy, 'l'-LRU, 'f'-FIFO, 'r'-random
+
+    Examples:   -cache:dl1 dl1:4096:32:1:l
+                -dtlb dtlb:128:4096:32:r
+
+  Cache levels can be unified by pointing a level of the instruction cache
+  hierarchy at the data cache hiearchy using the "dl1" and "dl2" cache
+  configuration arguments.  Most sensible combinations are supported, e.g.,
+
+    A unified l2 cache (il2 is pointed at dl2):
+      -cache:il1 il1:128:64:1:l -cache:il2 dl2
+      -cache:dl1 dl1:256:32:1:l -cache:dl2 ul2:1024:64:2:l
+
+    Or, a fully unified cache hierarchy (il1 pointed at dl1):
+      -cache:il1 dl1
+      -cache:dl1 ul1:256:32:1:l -cache:dl2 ul2:1024:64:2:l
+
+
+
+sim: ** starting functional simulation w/ caches **
+warning: partially supported sigprocmask() call...
+
+sim: ** simulation statistics **
+sim_cycle                     49789 # total simulation time in cycles
+sim_IPC                      1.0000 # instructions per cycle
+sim_CPI                      1.0000 # cycles per instruction
+sim_exec_BW            <error: variable is undefined> # total instructions (mis-spec + committed) per cycle
+sim_IPB                <error: variable is undefined> # instruction per branch
+sim_num_insn                  49790 # total number of instructions executed
+sim_num_refs                  13760 # total number of loads and stores executed
+sim_elapsed_time                  1 # total simulation time in seconds
+sim_inst_rate            49790.0000 # simulation speed (in insts/sec)
+ul1.accesses                  64024 # total number of accesses
+ul1.hits                      61819 # total number of hits
+ul1.misses                     2205 # total number of misses
+ul1.replacements               1950 # total number of replacements
+ul1.writebacks                  198 # total number of writebacks
+ul1.invalidations                 0 # total number of invalidations
+ul1.miss_rate                0.0344 # miss rate (i.e., misses/ref)
+ul1.repl_rate                0.0305 # replacement rate (i.e., repls/ref)
+ul1.wb_rate                  0.0031 # writeback rate (i.e., wrbks/ref)
+ul1.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
+ul2.accesses                   2403 # total number of accesses
+ul2.hits                       1422 # total number of hits
+ul2.misses                      981 # total number of misses
+ul2.replacements                512 # total number of replacements
+ul2.writebacks                   59 # total number of writebacks
+ul2.invalidations                 0 # total number of invalidations
+ul2.miss_rate                0.4082 # miss rate (i.e., misses/ref)
+ul2.repl_rate                0.2131 # replacement rate (i.e., repls/ref)
+ul2.wb_rate                  0.0246 # writeback rate (i.e., wrbks/ref)
+ul2.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
+ul3.accesses                   1040 # total number of accesses
+ul3.hits                        264 # total number of hits
+ul3.misses                      776 # total number of misses
+ul3.replacements                 98 # total number of replacements
+ul3.writebacks                   13 # total number of writebacks
+ul3.invalidations                 0 # total number of invalidations
+ul3.miss_rate                0.7462 # miss rate (i.e., misses/ref)
+ul3.repl_rate                0.0942 # replacement rate (i.e., repls/ref)
+ul3.wb_rate                  0.0125 # writeback rate (i.e., wrbks/ref)
+ul3.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
+ld_text_base           0x0120000000 # program text (code) segment base
+ld_text_size                 188416 # program text (code) size in bytes
+ld_data_base           0x0140000000 # program initialized data segment base
+ld_data_size                  41984 # program init'ed `.data' and uninit'ed `.bss' size in bytes
+ld_stack_base          0x011ff9b000 # program stack segment base (highest address in stack)
+ld_stack_size                 16384 # program initial stack size
+ld_prog_entry          0x012000f750 # program entry point (initial PC)
+ld_environ_base        0x011ff97000 # program environment base address address
+ld_target_big_endian              0 # target executable endian-ness, non-zero if big endian
+mem.page_count                   29 # total number of pages allocated
+mem.page_mem                   232k # total size of memory pages allocated
+mem.ptab_misses                  75 # total first level page table misses
+mem.ptab_accesses            550364 # total page table accesses
+mem.ptab_miss_rate           0.0001 # first level page table miss rate
+
