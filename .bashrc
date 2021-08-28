@@ -86,4 +86,6 @@ fi
 
 PS1="${debian_chroot:+($debian_chroot)}\[\033[01;36m\]\u\[\033[00m\]@\[\033[01;34m\]notebook\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
 #export PATH="$HOME:$PATH"
+git config --global user.email "mo@null.syr.edu"
+git config --global user.name "Mostly OK"
 conda activate
